@@ -1,62 +1,60 @@
 # HLEB
 ### ![HLEB LOGO](https://phphleb.ru/logo.gif)
-# PHP Micro-Framework
+# 微框架 PHP Micro-Framework
 
-Framework for hobbies and non-commercial projects. Requires PHP version 7.0 or higher.
+爱好和非商业项目的框架。 需要PHP 7.0或更高版本。
 
-Routing > Controllers > Models > Page Builder > Debug Panel
+路由>控制器>模型>页面构建器>调试面板
 
 [Link to instructions](https://phphleb.ru/ru/v1/) (RU)
 
-Installation
+安装
 -----------------------------------
-To start the mini-framework HLEB 
-1. Download the folder with the project from its original location.
+启动迷你框架HLEB
+1.从原始位置下载包含项目的文件夹。
 
-Using Composer:
+使用Composer：
 ```html
 $ composer create-project phphleb/hleb
 ```
-2. Assign the address of the resource to the "public" subdirectory.
-3. Establish the rights to allow changes for all users for the "storage" folder and all folders and files within it.
+2.将资源的地址分配给“public”子目录。
+3.建立允许更改“存储”文件夹及其中所有文件夹和文件的所有用户的权限。
 
-Upon completion of these steps, you can verify installation by typing the resource address assigned earlier (locally or on a remote server) in the address bar of the browser. If installation is successful, a parked page with the framework logo will be displayed.
+完成这些步骤后，您可以通过在浏览器的地址栏中键入先前分配的资源地址（本地或远程服务器）来验证安装。 如果安装成功，将显示带有框架徽标的停放页面。
 
-
-Customization
+定制
 -----------------------------------
-Command character constants in the micro-framework HLEB are set in the **start.hleb.php** file. Initially, a file with this name does not exist and must be copied from the **default.start.hleb.php** file in the same project root directory.
+微框架HLEB中的命令字符常量在 **start.hleb.php** 文件中设置。 最初，具有此名称的文件不存在，必须从同一项目根目录中的 **default.start.hleb.php** 文件中复制。
 
-Attention! Constant HLEB_PROJECT_DEBUG enables / disables debug mode. Do not use debug mode on a public server.
+注意！ 常量HLEB_PROJECT_DEBUG启用/禁用调试模式。 不要在公共服务器上使用调试模式。
 
 
-Routing
+路由
 -----------------------------------
-Project routes are compiled by the developer in the "/routes/main.php" file, other files with routes from the "routes" folder can be inserted (included) into this file, which together constitute a routing map.
+项目路由由开发人员在“/routes/main.php”文件中编译，其他具有来自“routes”文件夹的路由的文件可以插入（包含）到该文件中，这些文件一起构成路由映射。
 
-Routes are determined by class **Route** methods, the main of which is **get()**. All methods of this class are available and used only in the routing map.
+路由由类 **Route** 方法确定，其中主要是 **get()** 。 此类的所有方法都可用，仅在路由映射中使用。
 
-Attention! Route files are cached and should not contain any code containing external data.
+注意！ 路径文件被缓存，不应包含任何包含外部数据的代码。
 
 ```php
 Route::get('/', 'Hello, world!');
 ```
 
-Display the contents of the "/views/index.php" file using the **view()** function (also available in controllers).
+使用 **view（)** 函数显示“/views/index.php”文件的内容（也可在控制器中使用）。
 ```php
 Route::get('/', view('index'));
 ```
 
-This is an example of a more complex-named route. Here, $x and $y values are transferred to the "/views/map/new.php" file, and conditions for the dynamic address are set ("version" and "page" can take different values). You can call a route up by its name using dedicated functions of the framework.
+这是一个更复杂命名的路线的例子。 这里，$x 和 $y 值被传送到“/views/map/new.php”文件，并设置动态地址的条件（“版本”和“页面”可以采用不同的值）。 您可以使用框架的专用函数按名称调用路由。
 ```php
 Route::get('/ru/{version}/{page}/', view('/map/new', ['x' => 59.9, 'y' => 30.3]))->where(['version' => '[a-z0-9]+', 'page' => '[a-z]+'])->name('RouteName');
 
 ```
-
-Groups of routes
+路线组
 -----------------------------------
 
-Methods located before a route or group:
+位于路线或组之前的方法：
 
 **type()->**, **prefix()->**, **protect()->**, **before()->**
 
@@ -66,7 +64,7 @@ Route::prefix('/lang/')->before('AuthClassBefore')->getGroup();
   Route::protect()->type('post')->get('/ajax/', '{"connect":1}'); // /lang/ajax/
 Route::endGroup();
 ```
-Methods located after a route or group:
+位于路线或团体之后的方法：
 
 **->where()**, **->after()**
 
@@ -75,11 +73,11 @@ Route::type(['get','post'])->before('ClassBefore')->get('/path/')->controller('C
 
 ```
 
-Controllers
+控制器
 -----------------------------------
-Creating a simple controller with such content:
+创建具有此类内容的简单控制器：
 ```php
-// File /app/Controllers/TestController.php
+// 文件 /app/Controllers/TestController.php
 namespace App\Controllers;
 use App\Models\UserModel;
 use Hleb\Constructor\Handlers\Request;
@@ -92,48 +90,48 @@ class TestController extends \MainController
     }
 }
 ```
-You can use it in the route map:
+您可以在路线图中使用它：
 
 ```php
 Route::get('/profile/{id}/')->controller('TestController',['friends'])->where(['id' => '[0-9]+']);
 ```  
-or
+或
 
 ```php
 Route::get('/profile/{id}/')->controller('TestController@index',['friends'])->where(['id' => '[0-9]+']);
 ``` 
 
 
-Models
+楷模
 -----------------------------------
  ```php
-// File /app/Models/UserModel.php
+// 文件 /app/Models/UserModel.php
 namespace App\Models;
 class UserModel extends \MainModel
 {
    static function getData($params)
    {
-     $data = /* ... */ // A query to the database, returning an array of user data.
+     $data = /* ... */ //对数据库的查询，返回用户数据数组。
      return $data;
    }
 }
 ```
 
-Page Builder
+页面构建器
 -----------------------------------
 ```php
 Route::renderMap('index page', ['/parts/header', 'index', '/parts/footer']);
 Route::get('/', render('index page'));
 ```
 
-Debug Panel
+调试面板
 -----------------------------------
 ```php
 \Hleb\Main\WorkDebug::add($debug_data, 'description');
 ```
 
-License
+执照
 -----------------------------------
-Free ([MIT](https://github.com/phphleb/hleb/blob/master/LICENSE) License) 
+自由 ([MIT](https://github.com/phphleb/hleb/blob/master/LICENSE) License) 
 
 
